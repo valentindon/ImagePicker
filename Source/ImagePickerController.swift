@@ -4,8 +4,8 @@ import Photos
 
 @objc public protocol ImagePickerDelegate: NSObjectProtocol {
 
-  func wrapperDidPress(_ imagePicker: ImagePickerController, images: [UIImage])
-  func doneButtonDidPress(_ imagePicker: ImagePickerController, images: [UIImage])
+  func wrapperDidPress(_ imagePicker: ImagePickerController, images: [UIImage], imageUrls: [URL])
+  func doneButtonDidPress(_ imagePicker: ImagePickerController, images: [UIImage], imageUrls: [URL])
   func cancelButtonDidPress(_ imagePicker: ImagePickerController)
 }
 
@@ -371,13 +371,16 @@ extension ImagePickerController: BottomContainerViewDelegate {
 
   func doneButtonDidPress() {
     var images: [UIImage]
+    
     if let preferredImageSize = preferredImageSize {
       images = AssetManager.resolveAssets(stack.assets, size: preferredImageSize)
     } else {
       images = AssetManager.resolveAssets(stack.assets)
     }
-
-    delegate?.doneButtonDidPress(self, images: images)
+    AssetManager.assetsURLs(stack.assets, completionHandler: {(urls) in
+      self.delegate?.doneButtonDidPress(self, images: images, imageUrls: urls)
+    })
+    
   }
 
   func cancelButtonDidPress() {
@@ -392,7 +395,10 @@ extension ImagePickerController: BottomContainerViewDelegate {
         images = AssetManager.resolveAssets(stack.assets)
     }
 
-    delegate?.wrapperDidPress(self, images: images)
+    AssetManager.assetsURLs(stack.assets, completionHandler: {(urls) in
+      self.delegate?.wrapperDidPress(self, images: images, imageUrls: urls)
+    })
+    
   }
 }
 
