@@ -1,4 +1,5 @@
 import UIKit
+import AVFoundation
 
 // MARK: - BottomContainer autolayout
 
@@ -76,6 +77,10 @@ extension TopView {
     addConstraint(NSLayoutConstraint(item: flashButton, attribute: .width,
       relatedBy: .equal, toItem: nil, attribute: .notAnAttribute,
       multiplier: 1, constant: 55))
+    
+    addConstraint(NSLayoutConstraint(item: flashButton, attribute: .height,
+    relatedBy: .equal, toItem: nil, attribute: .notAnAttribute,
+    multiplier: 1, constant: 55))
 
     if configuration.canRotateCamera {
       addConstraint(NSLayoutConstraint(item: rotateCamera, attribute: .right,
@@ -102,16 +107,16 @@ extension TopView {
 extension ImagePickerController {
 
   func setupConstraints() {
-    let attributes: [NSLayoutConstraint.Attribute] = [.bottom, .right, .width]
-    let topViewAttributes: [NSLayoutConstraint.Attribute] = [.left, .width]
+    let bottomViewAttributes: [NSLayoutConstraint.Attribute] = [.left, .bottom, .right] //, .width
+    let topViewAttributes: [NSLayoutConstraint.Attribute] = [.left, .right]
 
-    for attribute in attributes {
+    for attribute in bottomViewAttributes {
       view.addConstraint(NSLayoutConstraint(item: bottomContainer, attribute: attribute,
         relatedBy: .equal, toItem: view, attribute: attribute,
         multiplier: 1, constant: 0))
     }
 
-    for attribute: NSLayoutConstraint.Attribute in [.left, .top, .width] {
+    for attribute: NSLayoutConstraint.Attribute in [.left, .top, .right] {
       view.addConstraint(NSLayoutConstraint(item: cameraController.view!, attribute: attribute,
         relatedBy: .equal, toItem: view, attribute: attribute,
         multiplier: 1, constant: 0))
@@ -187,4 +192,49 @@ extension ButtonPicker {
         multiplier: 1, constant: 0))
     }
   }
+}
+
+
+extension UIDeviceOrientation {
+var videoOrientation : AVCaptureVideoOrientation {
+    var videoOrientation = AVCaptureVideoOrientation.portrait
+    switch (UIDevice.current.orientation) {
+    case .portrait:
+        videoOrientation = .portrait
+    case .landscapeRight:
+        videoOrientation = .landscapeLeft
+    case .landscapeLeft:
+        videoOrientation = .landscapeRight
+    case .portraitUpsideDown:
+        videoOrientation = .portrait
+    case .unknown:
+        if #available(iOS 13.0, *) {
+            guard let windowOrientation = UIApplication.shared
+                .windows
+                .first?
+                .windowScene?
+                .interfaceOrientation
+                else {
+                    videoOrientation = .portrait
+                    return videoOrientation
+            }
+                
+            switch windowOrientation {
+            case .landscapeRight:
+                videoOrientation = .landscapeRight
+            case .landscapeLeft:
+                videoOrientation = .landscapeLeft
+            default:
+                videoOrientation = .portrait
+            }
+        }else {
+            videoOrientation = .portrait
+        }
+    default:
+        videoOrientation = .portrait
+    }
+    return videoOrientation
+}
+
+
 }

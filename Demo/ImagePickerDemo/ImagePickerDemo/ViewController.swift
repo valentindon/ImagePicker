@@ -40,7 +40,7 @@ class ViewController: UIViewController, ImagePickerDelegate {
     config.noImagesTitle = "Sorry! There are no images here!"
     config.recordLocation = false
     config.allowVideoSelection = true
-
+    config.allowedOrientations = .all
     let imagePicker = ImagePickerController(configuration: config)
     imagePicker.delegate = self
 
@@ -54,6 +54,7 @@ class ViewController: UIViewController, ImagePickerDelegate {
   }
 
   func wrapperDidPress(_ imagePicker: ImagePickerController, images: [UIImage], imageUrls: [URL]) {
+    imagePicker.showGalleryView()
     /*
     guard images.count > 0 else { return }
 

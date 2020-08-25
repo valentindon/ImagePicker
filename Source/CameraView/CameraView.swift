@@ -142,7 +142,7 @@ class CameraView: UIViewController, CLLocationManagerDelegate, CameraManDelegate
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
 
-    previewLayer?.connection?.videoOrientation = .portrait
+    previewLayer?.connection?.videoOrientation = UIDevice.current.orientation.videoOrientation
     locationManager?.startUpdatingLocation()
   }
 
@@ -181,6 +181,8 @@ class CameraView: UIViewController, CLLocationManagerDelegate, CameraManDelegate
     blurView.frame = view.bounds
     containerView.frame = view.bounds
     capturedImageView.frame = view.bounds
+    previewLayer?.frame = view.bounds
+    previewLayer?.connection?.videoOrientation = UIDevice.current.orientation.videoOrientation
   }
 
   // MARK: - Actions
@@ -246,8 +248,8 @@ class CameraView: UIViewController, CLLocationManagerDelegate, CameraManDelegate
   // MARK: - Camera methods
 
   func focusTo(_ point: CGPoint) {
-    let convertedPoint = CGPoint(x: point.x / UIScreen.main.bounds.width,
-                                 y: point.y / UIScreen.main.bounds.height)
+    let convertedPoint = CGPoint(x: point.x / self.view.bounds.width,
+                                 y: point.y / self.view.bounds.height)
 
     cameraMan.focus(convertedPoint)
 
